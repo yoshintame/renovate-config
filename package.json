@@ -1,0 +1,22 @@
+{
+  "name": "renovate-config",
+  "private": true,
+  "release": {
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/github",
+        {
+          "successComment": false,
+          "failComment": false,
+          "releasedLabels": false
+        }
+      ]
+    ]
+  },
+  "devDependencies": {
+    "renovate": "^44.155.1",
+    "semantic-release": "^25.0.9"
+  }
+}

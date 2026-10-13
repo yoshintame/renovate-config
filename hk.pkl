@@ -1,0 +1,10 @@
+amends "package://github.com/jdx/hk/releases/download/v2.6.0/hk@2.6.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.6.0/hk@2.6.0#/Builtins.pkl"
+
+steps {
+  ["jactionlint"] = Builtins.jactionlint
+  ["renovate_config"] {
+    glob = List("default.json", "renovate.json")
+    check = "bunx --no-install renovate-config-validator --strict --no-global {{files}}"
+  }
+}

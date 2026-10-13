@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-caller-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  verify:
+    uses: yoshintame/workflows/.github/workflows/ci.yml@65a262a3d4f91b545de34e52a949f77f749a1944 # v1.1.0
+    permissions:
+      contents: read
+
+  release:
+    needs: verify
+    if: github.event_name == 'push'
+    uses: yoshintame/workflows/.github/workflows/release-semantic.yml@65a262a3d4f91b545de34e52a949f77f749a1944 # v1.1.0
+    permissions:
+      contents: write
