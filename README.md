@@ -13,14 +13,14 @@ Shared [Renovate](https://docs.renovatebot.com) preset for `yoshintame/*` reposi
 }
 ```
 
-The onboarding PR of a new repository suggests this preset by itself. The tag is pinned: Renovate opens a PR when a new version of the preset is released.
+The onboarding PR of a new repository suggests `local>yoshintame/renovate-config` without a tag; replace it with the pinned `github>` reference above before merging. Only a pinned tag is updated: Renovate then opens a PR when a new version of the preset is released.
 
 ## What the preset does
 
 - **Base:** `config:best-practices`, which pins GitHub Actions and reusable workflows to commit SHAs and devDependencies to exact versions.
-- **Schedule:** the 1st and 3rd Monday of the month, 00:00–04:00 Asia/Bangkok; a version must be 7 days old. Security updates skip both.
-- **Batches:** every non-major update in one PR; majors wait for approval in the Dependency Dashboard.
-- **Own releases:** `yoshintame/**` and `@yoshintame/**` arrive at once, without cooldown, in one PR.
+- **Schedule:** the 1st and 3rd Monday of the month, all day in Asia/Bangkok, so the daily run of a freshly onboarded repository still lands in it; a version must be 7 days old, npm included. Security updates skip both.
+- **Batches:** every minor, patch and pin update in one PR; majors wait for approval in the Dependency Dashboard.
+- **Own releases:** `yoshintame/**` and `@yoshintame/**` arrive at once, without cooldown, in one PR (majors in a separate one).
 - **hk:** the version in `mise.toml` and the package URLs in `hk.pkl` move in one PR.
 - **No lock file maintenance:** it would bypass the minimum release age.
 
@@ -29,11 +29,14 @@ The onboarding PR of a new repository suggests this preset by itself. The tag is
 | Where | How |
 |---|---|
 | `package.json`, `bun.lock` | built-in `bun` manager |
-| `mise.toml` | built-in `mise` manager; exact versions only, `latest` and `lts` move only in `mise.lock` |
-| `uses:` of actions and reusable workflows | built-in `github-actions` manager, SHA with a version comment |
+| `mise.toml` | built-in `mise` manager; `latest` and `lts` move only in `mise.lock` |
+| `uses:` of actions and reusable workflows, the `version:` input of `jdx/mise-action` | built-in `github-actions` manager, SHA with a version comment |
 | `package://github.com/<owner>/<repo>/releases/download/v<version>/<name>@<version>` in `*.pkl` | regex manager, GitHub releases |
-| a value under `# renovate: datasource=<datasource> depName=<name>` in workflow YAML | regex manager |
 | `flake.lock` | not updated: Nix inputs are refreshed by hand |
+
+## Pull requests without branch CI
+
+CI of the repositories runs on `push` to `main` and on `pull_request` only, so a `renovate/*` branch has no checks of its own. The preset keeps the default `prCreation` and opens the PR right away; the PR then runs CI.
 
 ## Checks
 

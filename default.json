@@ -3,10 +3,8 @@
   "description": "Shared Renovate preset for yoshintame repositories",
   "extends": ["config:best-practices"],
   "timezone": "Asia/Bangkok",
-  "schedule": ["* 0-3 1-7,15-21 * 1"],
+  "schedule": ["* * 1-7,15-21 * 1"],
   "minimumReleaseAge": "7 days",
-  "prCreation": "not-pending",
-  "internalChecksFilter": "strict",
   "osvVulnerabilityAlerts": true,
   "vulnerabilityAlerts": {
     "labels": ["security"]
@@ -16,11 +14,21 @@
   },
   "packageRules": [
     {
+      "description": "npm gets the same 7 days as everything else instead of the 3 days of security:minimumReleaseAgeNpm",
+      "matchDatasources": ["npm"],
+      "matchUpdateTypes": ["major", "minor", "patch"],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "Digest updates carry no release timestamp, so they must not wait for one (renovatebot/renovate#45236)",
+      "matchUpdateTypes": ["digest", "pinDigest"],
+      "minimumReleaseAgeBehaviour": "timestamp-optional"
+    },
+    {
       "description": "One batch for every non-major update",
       "groupName": "all non-major dependencies",
       "groupSlug": "all-non-major",
-      "matchPackageNames": ["*"],
-      "matchUpdateTypes": ["minor", "patch", "digest", "pin", "pinDigest"]
+      "matchUpdateTypes": ["minor", "patch", "pin"]
     },
     {
       "description": "Major updates wait for approval in the Dependency Dashboard",
@@ -30,7 +38,7 @@
     {
       "description": "hk in mise.toml and the hk package URLs in hk.pkl move together",
       "groupName": "hk",
-      "matchPackageNames": ["hk", "jdx/hk"]
+      "matchPackageNames": ["jdx/hk"]
     },
     {
       "description": "Own releases arrive at once, without cooldown",
@@ -51,18 +59,6 @@
       ],
       "datasourceTemplate": "github-releases",
       "extractVersionTemplate": "^v(?<version>.+)$"
-    },
-    {
-      "customType": "regex",
-      "description": "YAML values annotated with # renovate: datasource=<datasource> depName=<name>",
-      "managerFilePatterns": [
-        "/(^|/)\\.github/workflows/[^/]+\\.ya?ml$/",
-        "/(^|/)action\\.ya?ml$/"
-      ],
-      "matchStrings": [
-        "#\\s*renovate:\\s*datasource=(?<datasource>[a-z-]+)\\s+depName=(?<depName>\\S+)(?:\\s+versioning=(?<versioning>\\S+))?\\s*\\n\\s*[A-Za-z0-9_-]+:\\s*[\"']?(?<currentValue>[^\\s\"']+)[\"']?"
-      ],
-      "extractVersionTemplate": "^v?(?<version>.+)$"
     }
   ]
 }
